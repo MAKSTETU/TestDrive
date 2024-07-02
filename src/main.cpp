@@ -1,5 +1,5 @@
 
-// metra.cpp : Ётот файл содержит функцию "main". «десь начинаетс€ и заканчиваетс€ выполнение программы.
+// metra.cpp : √Э√≤√Ѓ√≤ √і√†√©√Ђ √±√Ѓ√§√•√∞√¶√®√≤ √і√≥√≠√™√ґ√®√Њ "main". √З√§√•√±√Љ √≠√†√Ј√®√≠√†√•√≤√±√њ √® √І√†√™√†√≠√Ј√®√Ґ√†√•√≤√±√њ √Ґ√ї√ѓ√Ѓ√Ђ√≠√•√≠√®√• √ѓ√∞√Ѓ√£√∞√†√ђ√ђ√ї.
 //
 #include <iostream>
 #include <math.h>
@@ -12,7 +12,7 @@
 #include <iterator>
 # define M_PI           3.14159265358979323846  /* pi */
 using namespace std;
-constexpr complex<float> _i = { 0.0, 1.0 }; // или const дл€ c++ < 11
+constexpr complex<float> _i = { 0.0, 1.0 }; // √®√Ђ√® const √§√Ђ√њ c++ < 11
 const float FDIS = 1200000;
 
 int main()
@@ -28,7 +28,7 @@ int main()
 	}
 	firstFILE.close();
 
-	vector <complex<float>> sgnl1;//ќѕќ–Ќџ… —»√ЌјЋ
+	vector <complex<float>> sgnl1;//√О√П√О√Р√Н√Ы√Й √С√И√Г√Н√А√Л
 	for (int i = 0; i < mas1.size(); i++)
 	{
 		complex<float> Complexvalue(mas1.at(i), mas1.at(i + 1));
@@ -45,7 +45,7 @@ int main()
 	}
 	FILE2.close();
 
-	vector <complex<float>> sgnl2;//«јЎ”ћЋ≈ЌЌјя –≈јЋ»«ј÷»я —»√ЌјЋј
+	vector <complex<float>> sgnl2;//√З√А√Ш√У√М√Л√Е√Н√Н√А√Я √Р√Е√А√Л√И√З√А√Ц√И√Я √С√И√Г√Н√А√Л√А
 	for (int i = 0; i < mas2.size(); i++)
 	{
 		complex<float> Complexvalue(mas2.at(i), mas2.at(i + 1));
@@ -57,33 +57,33 @@ int main()
 	/////////////////////////////////////////////////////////////
 
 	int SIZE = sgnl1.size();
-	vector<complex<float>> cpysgnl2(sgnl2);// ќѕ»я «јЎ”ћЋ≈ЌЌќ√ќ —»√ЌјЋј
+	vector<complex<float>> cpysgnl2(sgnl2);//√К√О√П√И√Я √З√А√Ш√У√М√Л√Е√Н√Н√О√Г√О √С√И√Г√Н√А√Л√А
 	float masmax[3][401];
 
-	for (int f0 = -200; f0 <= 200; f0++) //ѕќƒ—“–ќ… ј ѕќ „ј—“ќ“≈
+	for (int f0 = -200; f0 <= 200; f0++) //√П√О√Д√С√Т√Р√О√Й√К√А √П√О √Ч√А√С√Т√О√Т√Е
 	{
-		for (int k = 0; k < sgnl2.size(); k++)//ƒќћЌќ∆≈Ќ»≈ Ќј  ќћѕЋ≈ —Ќ”ё Ё —ѕќЌ≈Ќ“”
+		for (int k = 0; k < sgnl2.size(); k++)//√Д√О√М√Н√О√Ж√Е√Н√И√Е √Н√А √К√О√М√П√Л√Е√К√С√Н√У√Ю √Э√К√С√П√О√Н√Е√Н√Т√У
 		{
 			complex<float> e = (cos(2 * M_PI *f0 * k / FDIS), sin(2 * M_PI * f0 * k / FDIS));
 			cpysgnl2[k] = sgnl2.at(k) * e;
 		}
 
-		vector <complex<float>> Fur1(sgnl1);//—ќ«ƒјЌ»≈ ¬≈ “ќ–ј ƒЋя Ѕѕ‘ ѕ≈–¬ќ√ќ —»√ЌјЋј
-		vector <complex<float>> Fur2(cpysgnl2);//—ќ«ƒјЌ»≈ ¬≈ “ќ–ј ƒЋя Ѕѕ‘ ¬“ќ–ќ√ќ —»√ЌјЋј
-		vector <complex<float>> Fur3(sgnl2);//—ќ«ƒјЌ»≈ ¬≈ “ќ–ј ƒЋя Ѕѕ‘ —¬≈–“ » ƒ¬”’ —»√ЌјЋќ¬
-		//—ќ«ƒјЌ»≈ ѕЋјЌќ¬ ѕ‘
+		vector <complex<float>> Fur1(sgnl1);//ft vector signal1
+		vector <complex<float>> Fur2(cpysgnl2);//√С√О√З√Д√А√Н√И√Е √В√Е√К√Т√О√Р√А √Д√Л√Я √Б√П√Ф √В√Т√О√Р√О√Г√О √С√И√Г√Н√А√Л√А
+		vector <complex<float>> Fur3(sgnl2);//√С√О√З√Д√А√Н√И√Е √В√Е√К√Т√О√Р√А √Д√Л√Я √Б√П√Ф √С√В√Е√Р√Т√К√И √Д√В√У√Х √С√И√Г√Н√А√Л√О√В
+		//√С√О√З√Д√А√Н√И√Е √П√Л√А√Н√О√В √П√Ф
 		fftw_plan p1 = fftw_plan_dft_1d(sgnl1.size(), (fftw_complex*)&sgnl1.at(0), (fftw_complex*)&Fur1.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
 		fftw_plan p2 = fftw_plan_dft_1d(sgnl2.size(), (fftw_complex*)&cpysgnl2.at(0), (fftw_complex*)&Fur2.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
 		fftw_plan p3 = fftw_plan_dft_1d(sgnl2.size(), (fftw_complex*)&Fur3.at(0), (fftw_complex*)&Fur3.at(0), FFTW_BACKWARD, FFTW_ESTIMATE);
 
-		fftw_execute(p1);//¬џѕќЋЌ≈Ќ»≈ Ѕѕ‘ ѕ≈–¬ќ√ќ —»√ЌјЋј
+		fftw_execute(p1);//√В√Ы√П√О√Л√Н√Е√Н√И√Е √Б√П√Ф √П√Е√Р√В√О√Г√О √С√И√Г√Н√А√Л√А
 
-		fftw_execute(p2);//¬џѕќЋЌ≈Ќ»≈ Ѕѕ‘ ¬“ќ–ќ√ќ —»√ЌјЋј
+		fftw_execute(p2);//√В√Ы√П√О√Л√Н√Е√Н√И√Е √Б√П√Ф √В√Т√О√Р√О√Г√О √С√И√Г√Н√А√Л√А
 
 		for (int i = 0; i < sgnl1.size(); i++) {
 			Fur3.at(i) = Fur1.at(i) * Fur2.at(i);
 		}
-		fftw_execute(p3);//¬џѕќЋЌ≈Ќ»≈ ќЅ–ј“Ќќ√ќ Ѕѕ‘ —¬≈–“ » —»√ЌјЋќ¬
+		fftw_execute(p3);//√В√Ы√П√О√Л√Н√Е√Н√И√Е √О√Б√Р√А√Т√Н√О√Г√О √Б√П√Ф √С√В√Е√Р√Т√К√И √С√И√Г√Н√А√Л√О√В
 		fftw_destroy_plan(p1);
 		fftw_destroy_plan(p2);
 		fftw_destroy_plan(p3);
@@ -98,8 +98,8 @@ int main()
 		vector<float> :: iterator MAX;
 
 		MAX = max_element(ABS.begin(), ABS.end());
-		masmax[0][f0 + 200] = *MAX;//запись максимальеного значени€ коррел€ции
-		masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//запись индекса максимального значени€ коррел€ции
+		masmax[0][f0 + 200] = *MAX;//√І√†√ѓ√®√±√Љ √ђ√†√™√±√®√ђ√†√Ђ√Љ√•√≠√Ѓ√£√Ѓ √І√≠√†√Ј√•√≠√®√њ √™√Ѓ√∞√∞√•√Ђ√њ√ґ√®√®
+		masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//√І√†√ѓ√®√±√Љ √®√≠√§√•√™√±√† √ђ√†√™√±√®√ђ√†√Ђ√Љ√≠√Ѓ√£√Ѓ √І√≠√†√Ј√•√≠√®√њ √™√Ѓ√∞√∞√•√Ђ√њ√ґ√®√®
 		masmax[2][f0 + 200] = f0;
 
 	}
