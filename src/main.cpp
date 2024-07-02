@@ -12,7 +12,7 @@
 #include <iterator>
 # define M_PI           3.14159265358979323846  /* pi */
 using namespace std;
-constexpr complex<float> _i = { 0.0, 1.0 }; // èëè const äëÿ c++ < 11
+constexpr complex<float> _i = { 0.0, 1.0 }; // erunda
 const float FDIS = 1200000;
 
 int main()
@@ -28,7 +28,7 @@ int main()
 	}
 	firstFILE.close();
 
-	vector <complex<float>> sgnl1;//ÎÏÎÐÍÛÉ ÑÈÃÍÀË
+	vector <complex<float>> sgnl1;//signal 1
 	for (int i = 0; i < mas1.size(); i++)
 	{
 		complex<float> Complexvalue(mas1.at(i), mas1.at(i + 1));
@@ -45,7 +45,7 @@ int main()
 	}
 	FILE2.close();
 
-	vector <complex<float>> sgnl2;//ÇÀØÓÌËÅÍÍÀß ÐÅÀËÈÇÀÖÈß ÑÈÃÍÀËÀ
+	vector <complex<float>> sgnl2;//signal 2
 	for (int i = 0; i < mas2.size(); i++)
 	{
 		complex<float> Complexvalue(mas2.at(i), mas2.at(i + 1));
@@ -57,7 +57,7 @@ int main()
 	/////////////////////////////////////////////////////////////
 
 	int SIZE = sgnl1.size();
-	vector<complex<float>> cpysgnl2(sgnl2);//ÊÎÏÈß ÇÀØÓÌËÅÍÍÎÃÎ ÑÈÃÍÀËÀ
+	vector<complex<float>> cpysgnl2(sgnl2);//copy of signal 2
 	float masmax[3][401];
 
 	for (int f0 = -200; f0 <= 200; f0++) //ÏÎÄÑÒÐÎÉÊÀ ÏÎ ×ÀÑÒÎÒÅ
@@ -69,26 +69,26 @@ int main()
 		}
 
 		vector <complex<float>> Fur1(sgnl1);//ft vector signal1
-		vector <complex<float>> Fur2(cpysgnl2);//ÑÎÇÄÀÍÈÅ ÂÅÊÒÎÐÀ ÄËß ÁÏÔ ÂÒÎÐÎÃÎ ÑÈÃÍÀËÀ
-		vector <complex<float>> Fur3(sgnl2);//ÑÎÇÄÀÍÈÅ ÂÅÊÒÎÐÀ ÄËß ÁÏÔ ÑÂÅÐÒÊÈ ÄÂÓÕ ÑÈÃÍÀËÎÂ
-		//ÑÎÇÄÀÍÈÅ ÏËÀÍÎÂ ÏÔ
+		vector <complex<float>> Fur2(cpysgnl2);//ft vector cpysgnl2
+		vector <complex<float>> Fur3(sgnl2);//vector S1*S2
+		//fft plan
 		fftw_plan p1 = fftw_plan_dft_1d(sgnl1.size(), (fftw_complex*)&sgnl1.at(0), (fftw_complex*)&Fur1.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
 		fftw_plan p2 = fftw_plan_dft_1d(sgnl2.size(), (fftw_complex*)&cpysgnl2.at(0), (fftw_complex*)&Fur2.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
 		fftw_plan p3 = fftw_plan_dft_1d(sgnl2.size(), (fftw_complex*)&Fur3.at(0), (fftw_complex*)&Fur3.at(0), FFTW_BACKWARD, FFTW_ESTIMATE);
 
-		fftw_execute(p1);//ÂÛÏÎËÍÅÍÈÅ ÁÏÔ ÏÅÐÂÎÃÎ ÑÈÃÍÀËÀ
+		fftw_execute(p1);//fft signal 1
 
-		fftw_execute(p2);//ÂÛÏÎËÍÅÍÈÅ ÁÏÔ ÂÒÎÐÎÃÎ ÑÈÃÍÀËÀ
+		fftw_execute(p2);//fft copsgnl2
 
 		for (int i = 0; i < sgnl1.size(); i++) {
 			Fur3.at(i) = Fur1.at(i) * Fur2.at(i);
 		}
-		fftw_execute(p3);//ÂÛÏÎËÍÅÍÈÅ ÎÁÐÀÒÍÎÃÎ ÁÏÔ ÑÂÅÐÒÊÈ ÑÈÃÍÀËÎÂ
+		fftw_execute(p3);//fft S1*S2
 		fftw_destroy_plan(p1);
 		fftw_destroy_plan(p2);
 		fftw_destroy_plan(p3);
 
-		vector <float> ABS(SIZE);
+		vector <float> ABS(SIZE);// vector ABS of fft S1*S2
 		for (int i = 0; i < SIZE; i++)
 		{
 			ABS.at(i) = abs(Fur3.at(i));
@@ -98,8 +98,8 @@ int main()
 		vector<float> :: iterator MAX;
 
 		MAX = max_element(ABS.begin(), ABS.end());
-		masmax[0][f0 + 200] = *MAX;//çàïèñü ìàêñèìàëüåíîãî çíà÷åíèÿ êîððåëÿöèè
-		masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//çàïèñü èíäåêñà ìàêñèìàëüíîãî çíà÷åíèÿ êîððåëÿöèè
+		masmax[0][f0 + 200] = *MAX;//max value
+		masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//index of max value
 		masmax[2][f0 + 200] = f0;
 
 	}
