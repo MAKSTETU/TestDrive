@@ -1,10 +1,9 @@
 
-// metra.cpp : İòîò ôàéë ñîäåğæèò ôóíêöèş "main". Çäåñü íà÷èíàåòñÿ è çàêàí÷èâàåòñÿ âûïîëíåíèå ïğîãğàììû.
-//
 #include <iostream>
 #include <math.h>
 #include <cmath>
 #include <complex>
+#include <string>
 #include <fstream>
 #include <fftw3.h>
 #include <vector>
@@ -12,113 +11,120 @@
 #include <iterator>
 # define M_PI           3.14159265358979323846  /* pi */
 using namespace std;
-constexpr complex<float> _i = { 0.0, 1.0 }; // èëè const äëÿ c++ < 11
 const float FDIS = 1200000;
+
+///////////////////////////////////////////////////////////////////////file reading function
+vector<complex<double>> read(string name) {
+	vector <float> mass;
+	ifstream FILE(name, ios::binary | ios::in);
+	float num;
+	while (FILE.read(reinterpret_cast<char*>(&num), sizeof(float))) {
+		mass.push_back(num);
+	}
+	FILE.close();
+	vector <complex<double>> signal;//ĞĞŸĞĞ ĞĞ«Ğ™ Ğ¡Ğ˜Ğ“ĞĞĞ›
+	for (int i = 0; i < mass.size(); i++)
+	{
+		complex<float> Complexvalue(mass.at(i), mass.at(i + 1));
+		signal.push_back(Complexvalue);
+		i++;
+	}
+	return signal;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Signal
+{
+public:
+	void Signal::culc() {
+		vector <complex<double>> signal1 = read("psp1cut.bin");//ĞĞŸĞĞ ĞĞ«Ğ™ Ğ¡Ğ˜Ğ“ĞĞĞ›
+		vector <complex<double>> signal2 = read("psp1noised.bin");//Ğ—ĞĞ¨Ğ£ĞœĞ›Ğ•ĞĞĞĞ¯ Ğ Ğ•ĞĞ›Ğ˜Ğ—ĞĞ¦Ğ˜Ğ¯ Ğ¡Ğ˜Ğ“ĞĞĞ›Ğ
+
+		int SIZE = signal1.size();
+		vector<complex<double>> cpysgnl2(signal2);//ĞšĞĞŸĞ˜Ğ¯ Ğ—ĞĞ¨Ğ£ĞœĞ›Ğ•ĞĞĞĞ“Ğ Ğ¡Ğ˜Ğ“ĞĞĞ›Ğ
+		float masmax[3][401];
+		for (int f0 = -200; f0 <= 200; f0++) //ĞŸĞĞ”Ğ¡Ğ¢Ğ ĞĞ™ĞšĞ ĞŸĞ Ğ§ĞĞ¡Ğ¢ĞĞ¢Ğ•
+		{
+			for (int k = 0; k < SIZE; k++)//Ğ”ĞĞœĞĞĞ–Ğ•ĞĞ˜Ğ• ĞĞ ĞšĞĞœĞŸĞ›Ğ•ĞšĞ¡ĞĞ£Ğ® Ğ­ĞšĞ¡ĞŸĞĞĞ•ĞĞ¢Ğ£
+			{
+				complex<double> e = (cos(2 * M_PI * f0 * k / FDIS), sin(2 * M_PI * f0 * k / FDIS));
+				cpysgnl2[k] = signal2.at(k) * e;
+			}
+
+			vector <complex<double>> Fur1(signal1);//Ğ¡ĞĞ—Ğ”ĞĞĞ˜Ğ• Ğ’Ğ•ĞšĞ¢ĞĞ Ğ Ğ”Ğ›Ğ¯ Ğ‘ĞŸĞ¤ ĞŸĞ•Ğ Ğ’ĞĞ“Ğ Ğ¡Ğ˜Ğ“ĞĞĞ›Ğ
+			vector <complex<double>> Fur2(cpysgnl2);//Ğ¡ĞĞ—Ğ”ĞĞĞ˜Ğ• Ğ’Ğ•ĞšĞ¢ĞĞ Ğ Ğ”Ğ›Ğ¯ Ğ‘ĞŸĞ¤ Ğ’Ğ¢ĞĞ ĞĞ“Ğ Ğ¡Ğ˜Ğ“ĞĞĞ›Ğ
+			vector <complex<double>> Fur3(signal2);//Ğ¡ĞĞ—Ğ”ĞĞĞ˜Ğ• Ğ’Ğ•ĞšĞ¢ĞĞ Ğ Ğ”Ğ›Ğ¯ Ğ‘ĞŸĞ¤ Ğ¡Ğ’Ğ•Ğ Ğ¢ĞšĞ˜ Ğ”Ğ’Ğ£Ğ¥ Ğ¡Ğ˜Ğ“ĞĞĞ›ĞĞ’
+			vector <complex<double>> Fur4(Fur3);
+			//Ğ¡ĞĞ—Ğ”ĞĞĞ˜Ğ• ĞŸĞ›ĞĞĞĞ’ ĞŸĞ¤
+			fftw_plan p1 = fftw_plan_dft_1d(signal1.size(), (fftw_complex*)&signal1.at(0), (fftw_complex*)&Fur1.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
+			fftw_plan p2 = fftw_plan_dft_1d(signal2.size(), (fftw_complex*)&cpysgnl2.at(0), (fftw_complex*)&Fur2.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
+			fftw_plan p3 = fftw_plan_dft_1d(signal2.size(), (fftw_complex*)&Fur3.at(0), (fftw_complex*)&Fur4.at(0), FFTW_BACKWARD, FFTW_ESTIMATE);
+
+			fftw_execute(p1);//Ğ’Ğ«ĞŸĞĞ›ĞĞ•ĞĞ˜Ğ• Ğ‘ĞŸĞ¤ ĞŸĞ•Ğ Ğ’ĞĞ“Ğ Ğ¡Ğ˜Ğ“ĞĞĞ›Ğ
+
+			fftw_execute(p2);//Ğ’Ğ«ĞŸĞĞ›ĞĞ•ĞĞ˜Ğ• Ğ‘ĞŸĞ¤ Ğ’Ğ¢ĞĞ ĞĞ“Ğ 
+			for (int j = 0; j < SIZE; j++) {
+				Fur1.at(j) = conj(Fur1.at(j));
+			}
+
+			for (int i = 0; i < signal1.size(); i++) {
+				Fur3.at(i) = Fur1.at(i) * Fur2.at(i);
+			}
+			fftw_execute(p3);//Ğ’Ğ«ĞŸĞĞ›ĞĞ•ĞĞ˜Ğ• ĞĞ‘Ğ ĞĞ¢ĞĞĞ“Ğ Ğ‘ĞŸĞ¤ Ğ¡Ğ’Ğ•Ğ Ğ¢ĞšĞ˜ Ğ¡Ğ˜Ğ“ĞĞĞ›ĞĞ’
+			fftw_destroy_plan(p1);
+			fftw_destroy_plan(p2);
+			fftw_destroy_plan(p3);
+
+			vector <double> ABS(SIZE);
+			for (int i = 0; i < SIZE; i++)
+			{
+				ABS.at(i) = abs(Fur4.at(i));
+			}
+
+
+			vector<double> ::iterator MAX;
+
+			MAX = max_element(ABS.begin(), ABS.end());
+			masmax[0][f0 + 200] = *MAX;//Ğ·Ğ°Ğ¿Ğ¸ÑÑŒ Ğ¼Ğ°ĞºÑĞ¸Ğ¼Ğ°Ğ»ÑŒĞµĞ½Ğ¾Ğ³Ğ¾ Ğ·Ğ½Ğ°Ñ‡ĞµĞ½Ğ¸Ñ ĞºĞ¾Ñ€Ñ€ĞµĞ»ÑÑ†Ğ¸Ğ¸
+			masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//Ğ·Ğ°Ğ¿Ğ¸ÑÑŒ Ğ¸Ğ½Ğ´ĞµĞºÑĞ° Ğ¼Ğ°ĞºÑĞ¸Ğ¼Ğ°Ğ»ÑŒĞ½Ğ¾Ğ³Ğ¾ Ğ·Ğ½Ğ°Ñ‡ĞµĞ½Ğ¸Ñ ĞºĞ¾Ñ€Ñ€ĞµĞ»ÑÑ†Ğ¸Ğ¸
+			masmax[2][f0 + 200] = f0;
+
+		}
+
+		double max_value = masmax[0][0];
+		double max_index = 0;
+		double Ftune = 0;
+		for (int i = 1; i < 401; i++) {
+			if (masmax[0][i] > max_value) {
+				max_value = masmax[0][i];
+				max_index = masmax[1][i];
+				Ftune = masmax[2][i];
+			}
+		}
+		//cout << "MAX_VALUE=" << max_value << endl;
+		cout << "Ğ²Ñ€ĞµĞ¼ĞµĞ½Ğ½Ğ°Ñ Ğ·Ğ°Ğ´ĞµÑ€Ğ¶ĞºĞ°: " << max_index << " Ğ¾Ñ‚ÑÑ‡ĞµÑ‚Ğ¾Ğ²" << endl;
+		cout << "Ñ‡Ğ°ÑÑ‚Ğ¾Ñ‚Ğ½Ğ°Ñ Ğ¾Ñ‚ÑÑ€Ğ¾Ğ¹ĞºĞ°: " << -Ftune << " Ğ“Ñ†" << endl;
+
+	}
+	Signal() {
+		
+	}
+	~Signal() {
+
+		}
+
+private:
+	
+};
+
+
 
 int main()
 {
-	///////////////////////////////////////////////////////////////////read first signal
-
-	vector <float> mas1;
-
-	ifstream firstFILE("psp1cut.bin", ios::binary | ios::in);
-	float num;
-	while (firstFILE.read(reinterpret_cast<char*>(&num), sizeof(float))) {
-		mas1.push_back(num);
-	}
-	firstFILE.close();
-
-	vector <complex<float>> sgnl1;//ÎÏÎĞÍÛÉ ÑÈÃÍÀË
-	for (int i = 0; i < mas1.size(); i++)
-	{
-		complex<float> Complexvalue(mas1.at(i), mas1.at(i + 1));
-		sgnl1.push_back(Complexvalue);
-		i++;
-	}
-	////////////////////////////////////////////////////////////////// read second signal
-	vector <float> mas2;
-
-	ifstream FILE2("psp1noised.bin", ios::binary | ios::in);
-	float num2;
-	while (FILE2.read(reinterpret_cast<char*>(&num2), sizeof(float))) {
-		mas2.push_back(num2);
-	}
-	FILE2.close();
-
-	vector <complex<float>> sgnl2;//ÇÀØÓÌËÅÍÍÀß ĞÅÀËÈÇÀÖÈß ÑÈÃÍÀËÀ
-	for (int i = 0; i < mas2.size(); i++)
-	{
-		complex<float> Complexvalue(mas2.at(i), mas2.at(i + 1));
-		sgnl2.push_back(Complexvalue);
-		i++;
-	}
-	
-	//cout << sgnl2.size() << sgnl2.front() << endl << sgnl2.at(1) << endl << sgnl2.at(2)<<endl<<sgnl2.back();
-	/////////////////////////////////////////////////////////////
-
-	int SIZE = sgnl1.size();
-	vector<complex<float>> cpysgnl2(sgnl2);//ÊÎÏÈß ÇÀØÓÌËÅÍÍÎÃÎ ÑÈÃÍÀËÀ
-	float masmax[3][401];
-
-	for (int f0 = -200; f0 <= 200; f0++) //ÏÎÄÑÒĞÎÉÊÀ ÏÎ ×ÀÑÒÎÒÅ
-	{
-		for (int k = 0; k < sgnl2.size(); k++)//ÄÎÌÍÎÆÅÍÈÅ ÍÀ ÊÎÌÏËÅÊÑÍÓŞ İÊÑÏÎÍÅÍÒÓ
-		{
-			complex<float> e = (cos(2 * M_PI *f0 * k / FDIS), sin(2 * M_PI * f0 * k / FDIS));
-			cpysgnl2[k] = sgnl2.at(k) * e;
-		}
-
-		vector <complex<float>> Fur1(sgnl1);//ÑÎÇÄÀÍÈÅ ÂÅÊÒÎĞÀ ÄËß ÁÏÔ ÏÅĞÂÎÃÎ ÑÈÃÍÀËÀ
-		vector <complex<float>> Fur2(cpysgnl2);//ÑÎÇÄÀÍÈÅ ÂÅÊÒÎĞÀ ÄËß ÁÏÔ ÂÒÎĞÎÃÎ ÑÈÃÍÀËÀ
-		vector <complex<float>> Fur3(sgnl2);//ÑÎÇÄÀÍÈÅ ÂÅÊÒÎĞÀ ÄËß ÁÏÔ ÑÂÅĞÒÊÈ ÄÂÓÕ ÑÈÃÍÀËÎÂ
-		//ÑÎÇÄÀÍÈÅ ÏËÀÍÎÂ ÏÔ
-		fftw_plan p1 = fftw_plan_dft_1d(sgnl1.size(), (fftw_complex*)&sgnl1.at(0), (fftw_complex*)&Fur1.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
-		fftw_plan p2 = fftw_plan_dft_1d(sgnl2.size(), (fftw_complex*)&cpysgnl2.at(0), (fftw_complex*)&Fur2.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
-		fftw_plan p3 = fftw_plan_dft_1d(sgnl2.size(), (fftw_complex*)&Fur3.at(0), (fftw_complex*)&Fur3.at(0), FFTW_BACKWARD, FFTW_ESTIMATE);
-
-		fftw_execute(p1);//ÂÛÏÎËÍÅÍÈÅ ÁÏÔ ÏÅĞÂÎÃÎ ÑÈÃÍÀËÀ
-
-		fftw_execute(p2);//ÂÛÏÎËÍÅÍÈÅ ÁÏÔ ÂÒÎĞÎÃÎ ÑÈÃÍÀËÀ
-
-		for (int i = 0; i < sgnl1.size(); i++) {
-			Fur3.at(i) = Fur1.at(i) * Fur2.at(i);
-		}
-		fftw_execute(p3);//ÂÛÏÎËÍÅÍÈÅ ÎÁĞÀÒÍÎÃÎ ÁÏÔ ÑÂÅĞÒÊÈ ÑÈÃÍÀËÎÂ
-		fftw_destroy_plan(p1);
-		fftw_destroy_plan(p2);
-		fftw_destroy_plan(p3);
-
-		vector <float> ABS(SIZE);
-		for (int i = 0; i < SIZE; i++)
-		{
-			ABS.at(i) = abs(Fur3.at(i));
-		}
-
-	
-		vector<float> :: iterator MAX;
-
-		MAX = max_element(ABS.begin(), ABS.end());
-		masmax[0][f0 + 200] = *MAX;//çàïèñü ìàêñèìàëüåíîãî çíà÷åíèÿ êîğğåëÿöèè
-		masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//çàïèñü èíäåêñà ìàêñèìàëüíîãî çíà÷åíèÿ êîğğåëÿöèè
-		masmax[2][f0 + 200] = f0;
-
-	}
-
-	float max_value = masmax[0][0];
-	float max_index = 0;
-	float Ftune = 0;
-	for (int i = 1; i < 401; i++) {
-		if (masmax[0][i] > max_value) {
-			max_value = masmax[0][i];
-			max_index = masmax[1][i];
-			Ftune = masmax[2][i];
-		}
-	}
-	cout << "MAX_VALUE=" << max_value << endl;
-	cout << "MAX_INDEX=" << max_index << endl;
-	cout << "Ftune=" << Ftune << endl;
-
-	
+	setlocale(LC_ALL, "Russian");
+	Signal test;
+	test.culc();
 
 	return 0;
 }
