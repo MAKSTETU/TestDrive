@@ -22,7 +22,7 @@ vector<complex<double>> read(string name) {
 		mass.push_back(num);
 	}
 	FILE.close();
-	vector <complex<double>> signal;//п·п÷п·п═п²п╚п≥ п║п≤п⌠п²п░п⌡
+	vector <complex<double>> signal;//нонпмши яхцмюк
 	for (int i = 0; i < mass.size(); i++)
 	{
 		complex<float> Complexvalue(mass.at(i), mass.at(i + 1));
@@ -38,32 +38,32 @@ class Signal
 {
 public:
 	void Signal::culc() {
-		vector <complex<double>> signal1 = read("psp1cut.bin");//п·п÷п·п═п²п╚п≥ п║п≤п⌠п²п░п⌡
-		vector <complex<double>> signal2 = read("psp1noised.bin");//п≈п░п╗пёп°п⌡п∙п²п²п░п╞ п═п∙п░п⌡п≤п≈п░п╕п≤п╞ п║п≤п⌠п²п░п⌡п░
+		vector <complex<double>> signal1 = read("psp1cut.bin");//нонпмши яхцмюк
+		vector <complex<double>> signal2 = read("psp1noised.bin");//гюьслкеммюъ пеюкхгюжхъ яхцмюкю
 
 		int SIZE = signal1.size();
-		vector<complex<double>> cpysgnl2(signal2);//п п·п÷п≤п╞ п≈п░п╗пёп°п⌡п∙п²п²п·п⌠п· п║п≤п⌠п²п░п⌡п░
+		vector<complex<double>> cpysgnl2(signal2);//йнохъ гюьслкеммнцн яхцмюкю
 		float masmax[3][401];
-		for (int f0 = -200; f0 <= 200; f0++) //п÷п·п■п║п╒п═п·п≥п п░ п÷п· п╖п░п║п╒п·п╒п∙
+		for (int f0 = -200; f0 <= 200; f0++) //ондярпнийю он вюярнре
 		{
-			for (int k = 0; k < SIZE; k++)//п■п·п°п²п·п√п∙п²п≤п∙ п²п░ п п·п°п÷п⌡п∙п п║п²пёп╝ п╜п п║п÷п·п²п∙п²п╒пё
+			for (int k = 0; k < SIZE; k++)//днлмнфемхе мю йнлокейямсч щйяонмемрс
 			{
 				complex<double> e = (cos(2 * M_PI * f0 * k / FDIS), sin(2 * M_PI * f0 * k / FDIS));
 				cpysgnl2[k] = signal2.at(k) * e;
 			}
 
-			vector <complex<double>> Fur1(signal1);//п║п·п≈п■п░п²п≤п∙ п▓п∙п п╒п·п═п░ п■п⌡п╞ п▒п÷п╓ п÷п∙п═п▓п·п⌠п· п║п≤п⌠п²п░п⌡п░
-			vector <complex<double>> Fur2(cpysgnl2);//п║п·п≈п■п░п²п≤п∙ п▓п∙п п╒п·п═п░ п■п⌡п╞ п▒п÷п╓ п▓п╒п·п═п·п⌠п· п║п≤п⌠п²п░п⌡п░
-			vector <complex<double>> Fur3(signal2);//п║п·п≈п■п░п²п≤п∙ п▓п∙п п╒п·п═п░ п■п⌡п╞ п▒п÷п╓ п║п▓п∙п═п╒п п≤ п■п▓пёп╔ п║п≤п⌠п²п░п⌡п·п▓
+			vector <complex<double>> Fur1(signal1);//янгдюмхе бейрнпю дкъ аот оепбнцн яхцмюкю
+			vector <complex<double>> Fur2(cpysgnl2);//янгдюмхе бейрнпю дкъ аот брнпнцн яхцмюкю
+			vector <complex<double>> Fur3(signal2);//янгдюмхе бейрнпю дкъ аот ябепрйх дбсу яхцмюкнб
 			vector <complex<double>> Fur4(Fur3);
-			//п║п·п≈п■п░п²п≤п∙ п÷п⌡п░п²п·п▓ п÷п╓
+			//янгдюмхе окюмнб от
 			fftw_plan p1 = fftw_plan_dft_1d(signal1.size(), (fftw_complex*)&signal1.at(0), (fftw_complex*)&Fur1.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
 			fftw_plan p2 = fftw_plan_dft_1d(signal2.size(), (fftw_complex*)&cpysgnl2.at(0), (fftw_complex*)&Fur2.at(0), FFTW_FORWARD, FFTW_ESTIMATE);
 			fftw_plan p3 = fftw_plan_dft_1d(signal2.size(), (fftw_complex*)&Fur3.at(0), (fftw_complex*)&Fur4.at(0), FFTW_BACKWARD, FFTW_ESTIMATE);
 
-			fftw_execute(p1);//п▓п╚п÷п·п⌡п²п∙п²п≤п∙ п▒п÷п╓ п÷п∙п═п▓п·п⌠п· п║п≤п⌠п²п░п⌡п░
+			fftw_execute(p1);//бшонкмемхе аот оепбнцн яхцмюкю
 
-			fftw_execute(p2);//п▓п╚п÷п·п⌡п²п∙п²п≤п∙ п▒п÷п╓ п▓п╒п·п═п·п⌠п· 
+			fftw_execute(p2);//бшонкмемхе аот брнпнцн 
 			for (int j = 0; j < SIZE; j++) {
 				Fur1.at(j) = conj(Fur1.at(j));
 			}
@@ -71,7 +71,7 @@ public:
 			for (int i = 0; i < signal1.size(); i++) {
 				Fur3.at(i) = Fur1.at(i) * Fur2.at(i);
 			}
-			fftw_execute(p3);//п▓п╚п÷п·п⌡п²п∙п²п≤п∙ п·п▒п═п░п╒п²п·п⌠п· п▒п÷п╓ п║п▓п∙п═п╒п п≤ п║п≤п⌠п²п░п⌡п·п▓
+			fftw_execute(p3);//бшонкмемхе напюрмнцн аот ябепрйх яхцмюкнб
 			fftw_destroy_plan(p1);
 			fftw_destroy_plan(p2);
 			fftw_destroy_plan(p3);
@@ -86,8 +86,8 @@ public:
 			vector<double> ::iterator MAX;
 
 			MAX = max_element(ABS.begin(), ABS.end());
-			masmax[0][f0 + 200] = *MAX;//п╥п╟п©п╦я│я▄ п╪п╟п╨я│п╦п╪п╟п╩я▄п╣п╫п╬пЁп╬ п╥п╫п╟я┤п╣п╫п╦я▐ п╨п╬я─я─п╣п╩я▐я├п╦п╦
-			masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//п╥п╟п©п╦я│я▄ п╦п╫п╢п╣п╨я│п╟ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫п╬пЁп╬ п╥п╫п╟я┤п╣п╫п╦я▐ п╨п╬я─я─п╣п╩я▐я├п╦п╦
+			masmax[0][f0 + 200] = *MAX;//ГЮОХЯЭ ЛЮЙЯХЛЮКЭЕМНЦН ГМЮВЕМХЪ ЙНППЕКЪЖХХ
+			masmax[1][f0 + 200] = distance(ABS.begin(), MAX);//ГЮОХЯЭ ХМДЕЙЯЮ ЛЮЙЯХЛЮКЭМНЦН ГМЮВЕМХЪ ЙНППЕКЪЖХХ
 			masmax[2][f0 + 200] = f0;
 
 		}
@@ -103,19 +103,19 @@ public:
 			}
 		}
 		//cout << "MAX_VALUE=" << max_value << endl;
-		cout << "п╡я─п╣п╪п╣п╫п╫п╟я▐ п╥п╟п╢п╣я─п╤п╨п╟: " << max_index << " п╬я┌я│я┤п╣я┌п╬п╡" << endl;
-		cout << "я┤п╟я│я┌п╬я┌п╫п╟я▐ п╬я┌я│я─п╬п╧п╨п╟: " << -Ftune << " п⌠я├" << endl;
+		cout << "time delay: " << max_index << " lags" << endl;
+		cout << "frequency tuning: " << -Ftune << " Hz" << endl;
 
 	}
 	Signal() {
-		
+
 	}
 	~Signal() {
 
-		}
+	}
 
 private:
-	
+
 };
 
 
